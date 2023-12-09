@@ -1,0 +1,30 @@
+import pandas as pd
+import networkx as nx
+
+def calculate_distance_matrix(dataframe):
+    # Create a graph using networkx
+    G = nx.Graph()
+
+    # Add edges with distances between toll locations
+    for _, row in dataframe.iterrows():
+        G.add_edge(row['id_A'], row['id_B'], weight=row['distance'])
+        G.add_edge(row['id_B'], row['id_A'], weight=row['distance'])  # Assuming bidirectional distances
+
+    # Calculate shortest path lengths between toll locations
+    distance_matrix = nx.floyd_warshall_numpy(G, weight='weight')
+
+    # Replace diagonal values with 0
+    for i in range(len(distance_matrix)):
+        distance_matrix[i][i] = 0
+
+    # Create a DataFrame from the distance matrix
+    distance_df = pd.DataFrame(distance_matrix, index=G.nodes(), columns=G.nodes())
+
+    return distance_df
+
+# Load the dataset into a DataFrame
+dataset = pd.read_csv('dataset-3.csv')
+
+# Call the function with the dataset
+result_matrix = calculate_distance_matrix(dataset)
+print(result_matrix)
