@@ -1,0 +1,25 @@
+import pandas as pd
+
+def find_ids_within_ten_percentage_threshold(df, reference_value):
+    # Calculate the average distance for the reference value
+    avg_distance_reference = df[df['id_start'] == reference_value]['distance'].mean()
+
+    # Calculate the threshold values within 10% of the average distance for the reference value
+    lower_threshold = avg_distance_reference - (0.1 * avg_distance_reference)
+    upper_threshold = avg_distance_reference + (0.1 * avg_distance_reference)
+
+    # Filter values from 'id_start' column that lie within the threshold range
+    filtered_ids = df[(df['id_start'] != reference_value) &
+                      (df['distance'] >= lower_threshold) &
+                      (df['distance'] <= upper_threshold)]['id_start'].unique()
+
+    # Sort the list of values and return
+    sorted_filtered_ids = sorted(filtered_ids)
+    
+    return sorted_filtered_ids
+
+# Assuming 'result_unrolled' is the DataFrame from Question 2
+# Replace 'reference_value' with the desired integer reference value
+reference_value = 1  # Replace with the desired reference value
+result_ids_within_threshold = find_ids_within_ten_percentage_threshold(result_unrolled, reference_value)
+print(result_ids_within_threshold)
