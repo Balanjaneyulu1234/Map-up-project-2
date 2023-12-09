@@ -1,0 +1,19 @@
+import pandas as pd
+
+def unroll_distance_matrix(distance_df):
+    # Reset the index to convert index values (toll locations) to a column
+    distance_df = distance_df.reset_index()
+
+    # Melt the DataFrame to create combinations of id_start and id_end along with their distances
+    unrolled_df = pd.melt(distance_df, id_vars='index', var_name='id_end', value_name='distance')
+    unrolled_df = unrolled_df.rename(columns={'index': 'id_start'})
+
+    # Remove rows where id_start is the same as id_end
+    unrolled_df = unrolled_df[unrolled_df['id_start'] != unrolled_df['id_end']]
+
+    return unrolled_df
+
+# Assuming 'result_matrix' is the DataFrame from Question 1
+# Call the function with the resulting DataFrame
+result_unrolled = unroll_distance_matrix(result_matrix)
+print(result_unrolled)
