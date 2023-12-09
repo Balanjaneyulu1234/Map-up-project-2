@@ -1,0 +1,21 @@
+import pandas as pd
+
+def calculate_toll_rate(df):
+    # Create rate coefficients for each vehicle type
+    rate_coefficients = {
+        'moto': 0.8,
+        'car': 1.2,
+        'rv': 1.5,
+        'bus': 2.2,
+        'truck': 3.6
+    }
+
+    # Calculate toll rates for each vehicle type by multiplying distance with rate coefficients
+    for vehicle_type, rate in rate_coefficients.items():
+        df[vehicle_type] = df['distance'] * rate
+
+    return df
+
+# Assuming 'result_unrolled' is the DataFrame from Question 2
+result_with_toll_rates = calculate_toll_rate(result_unrolled)
+print(result_with_toll_rates)
