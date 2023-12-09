@@ -1,0 +1,35 @@
+import pandas as pd
+from datetime import time
+
+def calculate_time_based_toll_rates(df):
+    # Create a dictionary to map the time ranges to discount factors
+    time_ranges_weekdays = [
+        (time(0, 0, 0), time(10, 0, 0), 0.8),
+        (time(10, 0, 0), time(18, 0, 0), 1.2),
+        (time(18, 0, 0), time(23, 59, 59), 0.8)
+    ]
+    time_ranges_weekends = [
+        (time(0, 0, 0), time(23, 59, 59), 0.7)
+    ]
+
+    # Apply discount factors based on time ranges for each unique (id_start, id_end) pair
+    for day in range(7):  # 7 days from Monday to Sunday
+        for start_time, end_time, factor in (time_ranges_weekdays if day < 5 else time_ranges_weekends):
+            mask = (df['startDay'] == day) & (df['startTime'] >= start_time) & (df['endTime'] <= end_time)
+            for vehicle_type in ['moto', 'car', 'rv', 'bus', 'truck']:
+                df.loc[mask, vehicle_type] *= factor
+
+    # Map day values to strings (Monday to Sunday)
+    days_of_week = {0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday', 4: 'Friday', 5: 'Saturday', 6: 'Sunday'}
+    df['start_day'] = df['startDay'].map(days_of_week)
+    df['end_day'] = df['endDay'].map(days_of_week)
+
+    # Map time ranges to start_time and end_time columns
+    df['start_time'] = pd.to_datetime(df['startTime']).dt.time
+    df['end_time'] = pd.to_datetime(df['endTime']).dt.time
+
+    return df[['start_day', 'start_time', 'end_day', 'end_time', 'moto', 'car', 'rv', 'bus', 'truck']]
+
+# Assuming 'result_with_toll_rates' is the DataFrame from Question 3
+result_with_time_based_toll_rates = calculate_time_based_toll_rates(result_with_toll_rates)
+print(result_with_time_based_toll_rates)
